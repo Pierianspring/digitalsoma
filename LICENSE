@@ -1,0 +1,81 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
+  Adjunct Professor, Computational Bio-Ecosystems
+  Agroecosystems Laboratory, University of Manitoba, Winnipeg, Canada
+  & BioTwinR Ltd.
+
+You are free to:
+
+  Share  — copy and redistribute the material in any medium or format
+           for any purpose, even commercially.
+
+  Adapt  — remix, transform, and build upon the material
+           for any purpose, even commercially.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the
+                licence, and indicate if changes were made. You may do so
+                in any reasonable manner, but not in any way that suggests
+                the licensor endorses you or your use.
+
+  No additional restrictions — You may not apply legal terms or
+                technological measures that legally restrict others from
+                doing anything the licence permits.
+
+Notices:
+
+  You do not have to comply with the licence for elements of the material
+  in the public domain or where your use is permitted by an applicable
+  exception or limitation.
+
+  No warranties are given. The licence may not give you all of the
+  permissions necessary for your intended use. For example, other rights
+  such as publicity, privacy, or moral rights may limit how you use the
+  material.
+
+Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+-------------------------------------------------------------------------------
+
+THIRD-PARTY ONTOLOGY ACKNOWLEDGEMENTS
+
+DigitalSoma uses Uniform Resource Identifiers (URIs) from the following
+open ontologies as property identifiers. No ontology content is bundled
+with this software; URIs are used as stable identifiers only.
+
+  Uberon Multi-Species Anatomy Ontology
+    Mungall C.J. et al. (2012). Uberon, an integrative multi-species
+    anatomy ontology. Genome Biology 13, R5.
+    https://obofoundry.org/ontology/uberon.html
+    Licence: CC BY 3.0
+
+  SNOMED Clinical Terms (SNOMED CT)
+    International Health Terminology Standards Development Organisation
+    (IHTSDO). https://www.snomed.org/
+    Use of SNOMED CT identifiers in open-source software is permitted
+    under the SNOMED CT Affiliate Licence for non-commercial or
+    open-source projects. See https://www.snomed.org/snomed-ct/get-snomed
+
+  VeDDRA — Veterinary Dictionary for Drug Regulatory Activities
+    European Medicines Agency (EMA).
+    https://www.ema.europa.eu/en/veterinary-regulatory/
+    Used under EMA open-data policy.
+
+  NCBITaxon — NCBI Taxonomy Ontology
+    National Center for Biotechnology Information.
+    https://www.ncbi.nlm.nih.gov/taxonomy
+    Public domain (US Government work).
+
+  UCUM — Unified Code for Units of Measure
+    Regenstrief Institute, Inc. https://ucum.org/
+    Licence: open licence for use of unit codes as identifiers.
+
+  PATO — Phenotype and Trait Ontology
+    https://obofoundry.org/ontology/pato.html
+    Licence: CC BY 3.0
+
+  HP — Human Phenotype Ontology / MP — Mammalian Phenotype Ontology
+    https://hpo.jax.org / https://www.informatics.jax.org/
+    Licence: hpoplus (HP), CC BY 4.0 (MP)
