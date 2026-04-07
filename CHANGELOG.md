@@ -9,7 +9,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [2.2.0] — 2026-03-30
 
 ### Added
-- **HL7 FHIR R4 integration** — `digitalsoma/fhir/` subpackage (zero external dependencies)
+- **HL7 FHIR R4 integration** — `digitalsoma/fhir/` subpackage 
   - `FHIRMapper` — stateless resource builder for Patient, Device, Observation, DiagnosticReport, Bundle
   - `to_fhir_bundle(ds)` — exports twin state as a FHIR R4 Bundle: Patient (NCBITaxon species extension), Device (soma_id), one Observation per canonical property (LOINC + SNOMED CT + UCUM), DiagnosticReport (VeDDRA → SNOMED CT)
   - `from_fhir_bundle(bundle)` — parses incoming FHIR Observations back to a readings dict for `update_sync()`, resolving via LOINC codes or round-trip `urn:digitalsoma:canonical_key` extension
@@ -65,8 +65,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Author
 Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
-Adjunct Professor, Computational Bio-Ecosystems, Agroecosystems Laboratory,
-University of Manitoba & BioTwinR Ltd., Winnipeg, Canada
+Adjunct Professor, Computational Bio-Ecosystems, Digital Agroecosystems Laboratory,
+University of Manitoba & BioTwinR Ltd.
 
 ---
 

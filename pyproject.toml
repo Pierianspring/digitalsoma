@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "digitalsoma"
 version = "2.2.0"
-description = "A physics-based digital twin framework for real-time animal physiology monitoring"
+description = "A dynamic digital twin engine that transforms raw animal sensor data into physiological state, clinical findings, and FHIR-ready regulatory output."
 readme = "README.md"
 license = { text = "CC-BY-4.0" }
 authors = [

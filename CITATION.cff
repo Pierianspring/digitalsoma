@@ -1,19 +1,19 @@
 cff-version: 1.2.0
 message: "If you use DigitalSoma in your research, please cite it using this metadata."
 type: software
-title: "DigitalSoma: A Physics-Based Digital Twin Framework for Real-Time Animal Physiology Monitoring"
+title: "DigitalSoma: A Dynamic Physiological Digital Twin Engine for Living Animals"
 version: "2.2.0"
 date-released: "2026-04-08"
 license: CC-BY-4.0
-url: "https://github.com/BioTwinR/digitalsoma"
+url: "https://github.com/Pierianspring/digitalsoma"
 authors:
   - family-names: "Youssef"
     given-names: "Ali"
     name-particle: ""
     alias: "Dr. ir. Ali Youssef"
-    affiliation: "Agroecosystems Laboratory, University of Manitoba, Winnipeg, Canada"
+    affiliation: "Digital Agroecosystems Laboratory, University of Manitoba, Winnipeg, Canada"
     orcid: "https://orcid.org/0000-0002-9986-5324"
-  - name: "BioTwinR Ltd."
+  - name: "BioTwinRs Ltd."
     city: Winnipeg
     country: CA
 keywords:
@@ -22,17 +22,18 @@ keywords:
   - veterinary informatics
   - pharmacovigilance
   - VeDDRA
+  - FHIR
   - precision livestock farming
   - computational bio-ecosystems
   - ontology
-repository-code: "https://github.com/BioTwinR/digitalsoma"
+repository-code: "https://github.com/Pierianspring/digitalsoma"
 abstract: >
   DigitalSoma is an open-source Python framework that represents any living animal
   as a continuously updated physiological digital twin. It ingests sensor streams
   from wearables, implants, and laboratory assays through a schema-agnostic manifest
   layer, normalises them against internationally recognised ontology vocabularies
   (Uberon, SNOMED CT, VeDDRA, NCBITaxon, UCUM), and executes a composable chain of
-  physics-based physiological solvers to infer cardiac output, metabolic rate, thermal
+  model-based physiological solvers to infer cardiac output, metabolic rate, thermal
   comfort index, and physiological stress index in real time. Adverse event flags are
   mapped to VeDDRA clinical sign term IDs and serialised as regulatory-ready
   pharmacovigilance reports compatible with EMA EVVET3, UK VMD, and FDA-CVM submission

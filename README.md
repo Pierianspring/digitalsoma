@@ -8,7 +8,7 @@
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--9986--5324-green.svg)](https://orcid.org/0000-0002-9986-5324)
 
 **Author:** Dr. ir. Ali Youssef — Adjunct Professor, Computational Bio-Ecosystems,
-Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd., Winnipeg, Canada
+Digital Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd.
 
 ---
 
