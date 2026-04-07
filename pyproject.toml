@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "digitalsoma"
+version = "2.2.0"
+description = "A physics-based digital twin framework for real-time animal physiology monitoring"
+readme = "README.md"
+license = { text = "CC-BY-4.0" }
+authors = [
+    { name = "Dr. ir. Ali Youssef", email = "info@biotwinr.ca" },
+]
+maintainers = [
+    { name = "Dr. ir. Ali Youssef", email = "info@biotwinr.ca" },
+]
+keywords = [
+    "digital twin",
+    "animal physiology",
+    "veterinary informatics",
+    "pharmacovigilance",
+    "VeDDRA",
+    "FHIR",
+    "livestock",
+    "precision agriculture",
+    "computational bio-ecosystems",
+    "ontology",
+    "sensor fusion",
+    "Sus scrofa",
+    "Equus caballus",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: Free To Use But Restricted",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+yaml = ["PyYAML>=6.0"]
+llm  = ["anthropic>=0.20"]
+dev  = ["pytest>=7.0", "PyYAML>=6.0", "build>=1.0", "twine>=4.0"]
+
+[project.urls]
+Homepage      = "https://github.com/Pierianspring/digitalsoma"
+Documentation = "https://github.com/Pierianspring/digitalsoma/tree/main/docs"
+Repository    = "https://github.com/Pierianspring/digitalsoma"
+"Bug Tracker" = "https://github.com/Pierianspring/digitalsoma/issues"
+ORCID         = "https://orcid.org/0000-0002-9986-5324"
+Changelog     = "https://github.com/Pierianspring/digitalsoma/releases"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "examples*", "equitwin*", "docs*"]
+
+[tool.setuptools.package-data]
+digitalsoma = ["py.typed"]
