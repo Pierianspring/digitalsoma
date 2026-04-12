@@ -6,10 +6,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [2.2.0] — 2026-03-30
+## [3.0.0] — 2026-03-30
 
 ### Added
-- **HL7 FHIR R4 integration** — `digitalsoma/fhir/` subpackage 
+- **HL7 FHIR R4 integration** — `digitalsoma/fhir/` subpackage (zero external dependencies)
   - `FHIRMapper` — stateless resource builder for Patient, Device, Observation, DiagnosticReport, Bundle
   - `to_fhir_bundle(ds)` — exports twin state as a FHIR R4 Bundle: Patient (NCBITaxon species extension), Device (soma_id), one Observation per canonical property (LOINC + SNOMED CT + UCUM), DiagnosticReport (VeDDRA → SNOMED CT)
   - `from_fhir_bundle(bundle)` — parses incoming FHIR Observations back to a readings dict for `update_sync()`, resolving via LOINC codes or round-trip `urn:digitalsoma:canonical_key` extension
@@ -27,10 +27,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `CHANGELOG.md`
 
 ### Changed
-- `soma_agent.py` — tool count 10 → 11, version 2.0.0 → 2.2.0, LOINC + FHIR R4 added to ontology namespace map
-- `digitalsoma/__init__.py` — v2.2.0, FHIR exports exposed at package level
+- `soma_agent.py` — tool count 10 → 11, version 2.0.0 → 3.0.0, LOINC + FHIR R4 added to ontology namespace map
+- `digitalsoma/__init__.py` — v3.0.0, FHIR exports exposed at package level
 - `setup.py` — minimal shim; all metadata moved to `pyproject.toml`
-- `CITATION.cff` — version 2.2.0, date 2026-03-30
+- `CITATION.cff` — version 3.0.0, date 2026-03-30
 
 ### Fixed
 - All inline Digital Pedon references removed from docstrings (carried over from v2.0.0 cleanup)
@@ -65,10 +65,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Author
 Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
-Adjunct Professor, Computational Bio-Ecosystems, Digital Agroecosystems Laboratory,
-University of Manitoba & BioTwinR Ltd.
+Adjunct Professor, Computational Bio-Ecosystems, Agroecosystems Laboratory,
+University of Manitoba & BioTwinR Ltd., Winnipeg, Canada
 
 ---
 
-[2.2.0]: https://github.com/Pierianspring/digitalsoma/releases/tag/v2.2.0
+[3.0.0]: https://github.com/Pierianspring/digitalsoma/releases/tag/v3.0.0
 [2.0.0]: https://github.com/Pierianspring/digitalsoma/releases/tag/v2.0.0

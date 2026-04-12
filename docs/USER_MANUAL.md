@@ -1,6 +1,6 @@
 # DigitalSoma User Manual
 
-**Version 2.2.0** — Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
+**Version 3.0.0** — Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
 Adjunct Professor, Computational Bio-Ecosystems, Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd., Winnipeg, Canada
 
 ---
@@ -652,7 +652,7 @@ report = ds.veddra_report()
 
 ## 12. FHIR R4 integration
 
-DigitalSoma v2.2.0 adds a native HL7 FHIR R4 I/O layer through the `digitalsoma.fhir` subpackage. It is a zero-dependency implementation — pure Python standard library, no `fhir.resources` package required.
+DigitalSoma v3.0.0 adds a native HL7 FHIR R4 I/O layer through the `digitalsoma.fhir` subpackage. It is a zero-dependency implementation — pure Python standard library, no `fhir.resources` package required.
 
 ### 12.1 Overview
 
@@ -887,4 +887,4 @@ Unit conversion is applied at the sensor manifest layer (`sensor_layer.py`). If 
 
 ---
 
-*DigitalSoma v2.2.0 — Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324), Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd., Winnipeg, Canada. CC BY 4.0.*
+*DigitalSoma v3.0.0 — Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324), Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd., Winnipeg, Canada. CC BY 4.0.*

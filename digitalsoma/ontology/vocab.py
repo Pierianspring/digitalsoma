@@ -109,7 +109,7 @@ PROPERTIES: List[OntologyProperty] = [
     ),
     OntologyProperty(
         canonical="spo2_pct",
-        uri="http://snomed.info/id/59408-5",
+        uri="http://snomed.info/id/103228002",
         unit="%",
         aliases=["SpO2", "spo2", "o2_sat", "O2Sat", "oxygen_saturation",
                  "OxygenSaturation", "pulse_ox"],
@@ -151,7 +151,7 @@ PROPERTIES: List[OntologyProperty] = [
     ),
     OntologyProperty(
         canonical="ambient_temp_C",
-        uri="http://snomed.info/id/364395008",
+        uri="http://snomed.info/id/415974002",
         unit="Cel",
         aliases=["T_ambient", "ambient_temp", "AmbientTemp",
                  "env_temp", "T_env", "temperature_ambient"],
@@ -202,14 +202,14 @@ PROPERTIES: List[OntologyProperty] = [
         uri="http://purl.obolibrary.org/obo/CMO_0000649",
         unit="kcal/d",
         aliases=["RMR", "rmr", "RestingMetabolicRate", "BMR"],
-        description="Resting metabolic rate",
+        description="Resting metabolic rate (kcal/day) — Kleiber allometric scaling",
     ),
     OntologyProperty(
         canonical="rmr_W",
-        uri="http://purl.obolibrary.org/obo/CMO_0000649",
+        uri="http://purl.obolibrary.org/obo/CMO_0000108",
         unit="W",
         aliases=["rmr_watts", "metabolic_power_W"],
-        description="Resting metabolic rate in Watts",
+        description="Resting metabolic rate (watts) — unit conversion from kcal/day",
     ),
 
     # ── Musculoskeletal / locomotion ─────────────────────────────────────────

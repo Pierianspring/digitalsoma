@@ -447,44 +447,86 @@ def _solver_neuroendocrine_stress(params: Dict, state: Dict) -> Dict:
 
 def _solver_adverse_event_screen(params: Dict, state: Dict) -> Dict:
     """
-    VeDDRA-aligned adverse event screening.
-    Maps physiological state variables to VeDDRA clinical sign categories and
-    computes an adverse event probability score (0–1) for pharmacovigilance reporting.
-    Each flagged sign is annotated with its VeDDRA term ID.
+    Species-aware VeDDRA adverse event screening — DigitalSoma v3.0.0.
+
+    Replaces the v2.x hardcoded 6-rule flat list with a data-driven,
+    species-specific rule engine. Rules are loaded from the Animal Type
+    Registry params dict (populated from veddra_rules.py) and evaluated
+    against the current physiological state.
+
+    VeDDRA codes are the official EMA Rev.16 PT-level codes (EMA/CVMP/PhVWP/
+    10418/2009 Rev.16, effective 1 October 2025). The v2.x 8-digit codes
+    (e.g. 10020557) were incorrect and are replaced in this release.
+
+    Output structure (identical to v2.x for backward compatibility):
+        ae_flags : list of flag dicts, each containing:
+            state_key       : canonical property that triggered the flag
+            value           : the measured value at time of firing
+            veddra_pt_code  : EMA Rev.16 Preferred Term code
+            veddra_term     : PT preferred term display name
+            veddra_hlt      : High Level Term
+            veddra_soc      : System Organ Class
+            snomed          : SNOMED CT concept ID (if mapped)
+            veddra_namespace: EMA namespace URI
+        adverse_event_score : float [0–1], flags / total rules for species
     """
+    from digitalsoma.veddra.veddra_terms import VEDDRA_TERMS
+    from digitalsoma.veddra.veddra_rules import get_rules_for_species
+
     flags: List[Dict[str, Any]] = []
+    animal_type = params.get("animal_type", "")
+    rules = get_rules_for_species(animal_type)
 
-    # VeDDRA term mappings: {state_key: (threshold_fn, veddra_term, veddra_id)}
-    _VEDDRA_SCREENS = [
-        ("core_temp_C",         lambda v, p: v > p.get("core_temp_normal_C", 38.5) + 1.5,
-         "Hyperthermia", "10020557"),
-        ("core_temp_C",         lambda v, p: v < p.get("core_temp_normal_C", 38.5) - 2.0,
-         "Hypothermia", "10021113"),
-        ("heart_rate_bpm",      lambda v, p: v > p.get("hr_normal_bpm", 60.0) * 1.5,
-         "Tachycardia", "10043071"),
-        ("heart_rate_bpm",      lambda v, p: v < p.get("hr_normal_bpm", 60.0) * 0.6,
-         "Bradycardia", "10006093"),
-        ("spo2_pct",            lambda v, _p: v < 90.0,
-         "Hypoxia", "10021143"),
-        ("physiological_stress_index", lambda v, _p: v > 0.7,
-         "Distress", "10013029"),
-    ]
+    VEDDRA_NS = "https://www.ema.europa.eu/en/veterinary-regulatory/"
 
-    for key, threshold_fn, veddra_term, veddra_id in _VEDDRA_SCREENS:
-        val = state.get(key)
-        if val is not None and threshold_fn(val, params):
-            flags.append({
-                "state_key": key,
-                "value": val,
-                "veddra_term": veddra_term,
-                "veddra_id": veddra_id,
-                "veddra_namespace": "https://www.ema.europa.eu/en/veterinary-regulatory/",
-            })
+    for rule in rules:
+        key    = rule["key"]
+        op     = rule["op"]
+        val    = state.get(key)
+        if val is None:
+            continue
 
-    ae_score = min(len(flags) / max(len(_VEDDRA_SCREENS), 1), 1.0)
+        # Evaluate threshold
+        fired = False
+        if "absolute" in rule:
+            fired = (val > rule["absolute"]) if op == "gt" else (val < rule["absolute"])
+        elif "ref" in rule:
+            ref_val = params.get(rule["ref"])
+            if ref_val is None:
+                continue
+            factor = rule.get("factor", 1.0)
+            offset = rule.get("offset", 0.0)
+            threshold = ref_val * factor + (offset if op == "gt" else -offset)
+            fired = (val > threshold) if op == "gt" else (val < threshold)
+
+        if not fired:
+            continue
+
+        # Look up term from vocabulary
+        pt_code  = rule["pt_code"]
+        term_def = VEDDRA_TERMS.get(pt_code, {})
+        pt_name  = term_def.get("preferred_term", f"Unknown [{pt_code}]")
+        hlt      = term_def.get("hlt", "")
+        soc      = term_def.get("soc", "")
+        snomed   = term_def.get("snomed", "")
+
+        flags.append({
+            "state_key":        key,
+            "value":            val,
+            "veddra_pt_code":   pt_code,
+            "veddra_term":      pt_name,
+            "veddra_hlt":       hlt,
+            "veddra_soc":       soc,
+            "snomed":           snomed,
+            "veddra_namespace": VEDDRA_NS,
+        })
+
+    total_rules = max(len(rules), 1)
+    ae_score = min(len(flags) / total_rules, 1.0)
+
     return {
-        "ae_flags": flags,
-        "adverse_event_score": ae_score,
+        "ae_flags":             flags,
+        "adverse_event_score":  ae_score,
     }
 
 
@@ -553,10 +595,12 @@ class DigitalSoma:
 
         # Build params dict consumed by solvers
         self._params = {
-            "body_mass_kg": self._sl.get("body_mass_kg"),
-            "core_temp_normal_C": self._sl.get("core_temp_normal_C"),
-            "hr_normal_bpm": self._sl.get("hr_normal_bpm"),
-            "rr_normal_bpm": self._sl.get("rr_normal_bpm"),
+            "animal_type":           self._sl.get("animal_type", ""),
+            "body_mass_kg":          self._sl.get("body_mass_kg"),
+            "core_temp_normal_C":    self._sl.get("core_temp_normal_C"),
+            "hr_normal_bpm":         self._sl.get("hr_normal_bpm"),
+            "rr_normal_bpm":         self._sl.get("rr_normal_bpm"),
+            "cortisol_normal_nmol_L":self._sl.get("cortisol_normal_nmol_L", 30.0),
         }
 
         # Threshold overrides

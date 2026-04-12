@@ -1,81 +1,305 @@
-Creative Commons Attribution 4.0 International (CC BY 4.0)
+===============================================================================
+DIGITALSOMA v3.0.0 — LICENCE AND NOTICES
+===============================================================================
 
-Copyright (c) 2026 Dr. ir. Ali Youssef (ORCID: 0000-0002-9986-5324)
-  Adjunct Professor, Computational Bio-Ecosystems
-  Digital Agroecosystems Laboratory, University of Manitoba, Winnipeg, Canada
-  & BioTwinR Ltd.
+A Dynamic Physiological Digital Twin Engine for Living Animals
+
+Copyright (c) 2024–2026 Dr. ir. Ali Youssef
+  ORCID: 0000-0002-9986-5324
+  Adjunct Professor, "Computational Bioecosystems"
+  Digital Agroecosystems Laboratory, University of Manitoba
+  Winnipeg, Manitoba, Canada & Founder, BioTwinRs Ltd., Leuven, Belgium
+
+-------------------------------------------------------------------------------
+PART I — LICENCE
+-------------------------------------------------------------------------------
+
+DigitalSoma is released under the Creative Commons Attribution –
+NonCommercial – ShareAlike 4.0 International Licence (CC BY-NC-SA 4.0).
+
+Full legal text:
+  https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+                         PLAIN-LANGUAGE SUMMARY
 
 You are free to:
 
-  Share  — copy and redistribute the material in any medium or format
-           for any purpose, even commercially.
+  Share    Copy, download, and redistribute DigitalSoma and any
+           derivative works in any medium or format.
 
-  Adapt  — remix, transform, and build upon the material
-           for any purpose, even commercially.
+  Adapt    Remix, transform, extend, and build upon DigitalSoma —
+           adding new solvers, species templates, integrations, or
+           derived frameworks.
 
-Under the following terms:
+Under the following conditions:
 
-  Attribution — You must give appropriate credit, provide a link to the
-                licence, and indicate if changes were made. You may do so
-                in any reasonable manner, but not in any way that suggests
-                the licensor endorses you or your use.
+  Attribution (BY)
+           Every use, distribution, or publication that incorporates
+           DigitalSoma or any derivative of it must give clear and
+           prominent credit to the original author. The minimum required
+           attribution is:
 
-  No additional restrictions — You may not apply legal terms or
-                technological measures that legally restrict others from
-                doing anything the licence permits.
+             Youssef, A. (2026). DigitalSoma: A Dynamic Physiological
+             Digital Twin Engine for Living Animals (v3.0.0).
+             Digital Agroecosystems Laboratory, University of Manitoba
+             & BioTwinRs Ltd., Leuven, Belgium.
+             https://github.com/Pierianspring/digitalsoma
+             ORCID: 0000-0002-9986-5324
 
-Notices:
+           You must also indicate clearly if you have modified the
+           original work and may not imply that the original author
+           endorses your use, your modifications, or your conclusions.
 
-  You do not have to comply with the licence for elements of the material
-  in the public domain or where your use is permitted by an applicable
-  exception or limitation.
+  NonCommercial (NC)
+           You may not use DigitalSoma, in whole or in part, for
+           commercial purposes without explicit prior written permission
+           from the copyright holder.
 
-  No warranties are given. The licence may not give you all of the
-  permissions necessary for your intended use. For example, other rights
-  such as publicity, privacy, or moral rights may limit how you use the
-  material.
+           See Part II of this licence for the precise definition of
+           commercial use and the process for obtaining a commercial
+           licence.
 
-Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+  ShareAlike (SA)
+           If you distribute, publish, or release any derivative of
+           DigitalSoma — including modified versions of the source code,
+           extended frameworks, or new software systems that incorporate
+           DigitalSoma components — you must release your derivative work
+           under this same licence: CC BY-NC-SA 4.0.
+
+           You may not release derivatives under any more restrictive
+           licence, nor under any licence that permits commercial use,
+           without explicit written permission from the copyright holder.
+
+                              GENERAL NOTICES
+
+  No warranties are given. DigitalSoma is provided "as is", without
+  warranty of any kind, express or implied, including but not limited to
+  the warranties of merchantability, fitness for a particular purpose,
+  and non-infringement.
+
+  In no event shall the author or copyright holder be liable for any
+  claim, damages, or other liability arising from, out of, or in
+  connection with the software or the use or other dealings in the
+  software — including but not limited to adverse animal welfare outcomes,
+  incorrect clinical assessments, or errors in regulatory submissions
+  arising from use of DigitalSoma output.
+
+  This licence does not grant any right to use the name "DigitalSoma",
+  "BioTwinRs", or the name of the copyright holder in any advertising,
+  promotional, or endorsement context without prior written consent.
 
 -------------------------------------------------------------------------------
+PART II — DEFINITION OF COMMERCIAL USE AND COMMERCIAL LICENSING
+-------------------------------------------------------------------------------
 
-THIRD-PARTY ONTOLOGY ACKNOWLEDGEMENTS
+                      WHAT COUNTS AS COMMERCIAL USE
 
-DigitalSoma uses Uniform Resource Identifiers (URIs) from the following
-open ontologies as property identifiers. No ontology content is bundled
-with this software; URIs are used as stable identifiers only.
+The following uses are considered commercial and require explicit prior
+written permission from the copyright holder before any use begins:
 
-  Uberon Multi-Species Anatomy Ontology
-    Mungall C.J. et al. (2012). Uberon, an integrative multi-species
-    anatomy ontology. Genome Biology 13, R5.
-    https://obofoundry.org/ontology/uberon.html
-    Licence: CC BY 3.0
+  (a) PRODUCT SALE
+      Selling, licensing, or otherwise commercialising any software
+      product, application, platform, or tool that incorporates
+      DigitalSoma in whole or in part — whether as source code, compiled
+      binary, API, or cloud-hosted service.
 
-  SNOMED Clinical Terms (SNOMED CT)
-    International Health Terminology Standards Development Organisation
-    (IHTSDO). https://www.snomed.org/
-    Use of SNOMED CT identifiers in open-source software is permitted
-    under the SNOMED CT Affiliate Licence for non-commercial or
-    open-source projects. See https://www.snomed.org/snomed-ct/get-snomed
+  (b) PAID CONSULTING AND PROFESSIONAL SERVICES
+      Using DigitalSoma as part of any paid consulting engagement,
+      professional service, or fee-for-service analytical work, whether
+      the fee is charged to the client directly or recovered indirectly
+      through overhead, project billing, or institutional recharge
+      mechanisms outside of publicly funded academic grants.
 
-  VeDDRA — Veterinary Dictionary for Drug Regulatory Activities
-    European Medicines Agency (EMA).
-    https://www.ema.europa.eu/en/veterinary-regulatory/
-    Used under EMA open-data policy.
+  (c) COMMERCIAL PRODUCTION AND INDUSTRY USE
+      Using DigitalSoma in any commercial livestock production operation,
+      commercial aquaculture facility, veterinary practice operating for
+      profit, animal health company, precision livestock farming
+      technology company, or any other for-profit enterprise — regardless
+      of whether the use is internal (operational monitoring) or external
+      (client-facing service).
 
-  NCBITaxon — NCBI Taxonomy Ontology
-    National Center for Biotechnology Information.
-    https://www.ncbi.nlm.nih.gov/taxonomy
-    Public domain (US Government work).
+  (d) INDUSTRY-FUNDED RESEARCH
+      Using DigitalSoma in any research project where the primary funder
+      is a commercial entity (company, industry association, or venture-
+      backed organisation), or where any commercial partner holds rights
+      to exploit the research outputs for profit. This includes industry-
+      academic partnership agreements and collaborative research and
+      development agreements (CRDAs) where a commercial entity is a
+      named participant.
 
-  UCUM — Unified Code for Units of Measure
-    Regenstrief Institute, Inc. https://ucum.org/
-    Licence: open licence for use of unit codes as identifiers.
+  (e) SPIN-OUT AND COMMERCIALISATION ACTIVITIES
+      Using DigitalSoma as part of a technology transfer, spin-out
+      company formation, patent application, or any other activity
+      intended to generate commercial value from the software or from
+      research results produced using it.
 
-  PATO — Phenotype and Trait Ontology
-    https://obofoundry.org/ontology/pato.html
-    Licence: CC BY 3.0
+                      WHAT IS EXPLICITLY NOT COMMERCIAL USE
 
-  HP — Human Phenotype Ontology / MP — Mammalian Phenotype Ontology
-    https://hpo.jax.org / https://www.informatics.jax.org/
-    Licence: hpoplus (HP), CC BY 4.0 (MP)
+The following uses are explicitly permitted without any fee and without
+requiring permission, provided the attribution requirements in Part I
+are met:
+
+  (i)  Academic and university research — including thesis work,
+       postdoctoral research, and faculty research — at any accredited
+       academic institution, regardless of whether the research is
+       supported by public grant funding (e.g. NSERC, CIHR, EU Horizon,
+       BBSRC, NSF, NIH, or equivalent national research councils).
+
+  (ii) Teaching and educational use — including course demonstrations,
+       student assignments, laboratory practicals, and workshop training
+       at educational institutions.
+
+  (iii) Non-profit research organisations, government research agencies,
+        and intergovernmental bodies (e.g. FAO, OIE/WOAH, WHO) using
+        DigitalSoma for public-interest research with no commercial
+        exploitation of outputs.
+
+  (iv) Publication of research results, datasets, and methods in peer-
+       reviewed scientific literature, preprint servers, or conference
+       proceedings — provided the attribution requirement is met and the
+       published work itself is not a commercial product.
+
+  (v)  Development of new open-source tools, solvers, or extensions
+       released under CC BY-NC-SA 4.0 or a compatible non-commercial
+       licence.
+
+                      HOW TO OBTAIN A COMMERCIAL LICENCE
+
+Commercial use requires a separate written licence agreement. To request
+a commercial licence:
+
+  Contact:  info@biotwinrs.com
+  Subject:  "DigitalSoma Commercial Licence Request"
+  Include:  (1) Organisation name and type
+            (2) Intended use and deployment context
+            (3) Estimated scale of use (number of animals, users, sites)
+            (4) Whether the use involves regulatory submissions
+
+Commercial licences are negotiated individually. Terms including fees,
+scope, duration, sublicensing rights, and support arrangements are agreed
+in writing before any commercial use begins. The copyright holder
+reserves the right to decline any commercial licence request.
+
+-------------------------------------------------------------------------------
+PART III — SCIENTIFIC DISCLAIMERS
+-------------------------------------------------------------------------------
+
+DigitalSoma is a research and educational software framework. The
+following limitations apply to all built-in computational components.
+
+  BUILT-IN SOLVERS
+  The six built-in solvers are provided as initialisation scaffolding and
+  working starting points based on established biological principles and
+  published equations. They have not been validated as clinical decision-
+  support tools in any species or production environment. They are
+  intended to be supplemented, replaced, or overridden by user-defined,
+  validated computational models appropriate to the specific species, age
+  class, production system, and research question at hand.
+
+  PHYSIOLOGICAL STRESS INDEX (PSI)
+  The Physiological Stress Index is an original composite formulation
+  developed by the author specifically for DigitalSoma. It serves two
+  purposes only: (1) to trigger the Threshold Event System alarm when
+  multi-system stress is simultaneously detected, and (2) to provide a
+  proxy input to the VeDDRA Dyspnoea adverse event flag (PT 506).
+
+  THE PSI HAS NOT BEEN VALIDATED against independent welfare assessments,
+  clinical outcomes, or gold-standard stress measures in any species. The
+  composite formula, the equal weighting of components, and the 0.70
+  threshold are not derived from empirical optimisation. The PSI must not
+  be used as a standalone welfare indicator, clinical diagnostic
+  criterion, or welfare certification instrument without independent
+  species-specific validation.
+
+  VeDDRA ADVERSE EVENT FLAGS
+  VeDDRA adverse event flags produced by DigitalSoma are generated by
+  rule-based threshold comparison against species-relative baselines.
+  These flags are indicators for further investigation, not confirmed
+  diagnoses. All adverse event reports must be reviewed by a qualified
+  veterinarian before submission to any regulatory authority.
+
+  NO CLINICAL USE WITHOUT VALIDATION
+  DigitalSoma output must not be used as the sole basis for clinical
+  decisions, treatment choices, welfare certification, or regulatory
+  reporting without independent validation of the relevant solver models
+  for the specific animal population, production system, and context.
+
+-------------------------------------------------------------------------------
+PART IV — THIRD-PARTY VOCABULARY AND STANDARDS NOTICES
+-------------------------------------------------------------------------------
+
+DigitalSoma uses Uniform Resource Identifiers (URIs) from internationally
+recognised ontologies and terminology standards as property identifiers,
+observation codes, and unit codes. No ontology content, vocabulary
+database, or terminology file is bundled with this distribution. URIs are
+used exclusively as stable, globally unique identifiers pointing to
+externally maintained definitions.
+
+  ── Uberon Multi-Species Anatomy Ontology ──────────────────────────────
+  URI base:  http://purl.obolibrary.org/obo/UBERON_
+  Licence:   CC BY 3.0
+  Citation:  Mungall, C.J., et al. (2012). Genome Biology, 13, R5.
+  Source:    https://obofoundry.org/ontology/uberon.html
+
+  ── SNOMED CT — Systematized Nomenclature of Medicine ─────────────────
+  URI base:  http://snomed.info/sct/
+  Licence:   SNOMED CT Affiliate Licence (open-source projects)
+  Source:    https://www.snomed.org/snomed-ct/get-snomed
+
+  ── NCBITaxon — NCBI Taxonomy Ontology ────────────────────────────────
+  URI base:  http://purl.obolibrary.org/obo/NCBITaxon_
+  Licence:   Public domain (US Government work)
+  Source:    https://www.ncbi.nlm.nih.gov/taxonomy
+
+  ── UCUM — Unified Code for Units of Measure ──────────────────────────
+  URI base:  http://unitsofmeasure.org/
+  Licence:   Open licence for unit code identifiers
+  Citation:  Schadow & McDonald (2009). Regenstrief Institute.
+  Source:    https://ucum.org
+
+  ── LOINC — Logical Observation Identifiers Names and Codes ───────────
+  URI base:  http://loinc.org/
+  Licence:   LOINC Licence Agreement (free for use with attribution)
+  Citation:  McDonald, C.J., et al. (2003). Clinical Chemistry, 49(4).
+  Source:    https://loinc.org/licence/
+
+  ── VeDDRA — Veterinary Dictionary for Drug Regulatory Activities ──────
+  Revision:  EMA/CVMP/PhVWP/10418/2009 Rev.16, effective 1 October 2025
+  URI base:  https://www.ema.europa.eu/en/veterinary-regulatory/
+  Licence:   EMA open-data policy
+  Source:    https://www.ema.europa.eu/en/veterinary-regulatory-overview/
+             post-authorisation-veterinary-medicines/pharmacovigilance-
+             veterinary-medicines/eudravigilance-veterinary
+
+  ── PATO — Phenotype and Trait Ontology ───────────────────────────────
+  URI base:  http://purl.obolibrary.org/obo/PATO_
+  Licence:   CC BY 3.0
+  Source:    https://obofoundry.org/ontology/pato.html
+
+  ── HP — Human Phenotype Ontology ─────────────────────────────────────
+  URI base:  http://purl.obolibrary.org/obo/HP_
+  Licence:   hpoplus licence
+  Source:    https://hpo.jax.org
+
+  ── MP — Mammalian Phenotype Ontology ─────────────────────────────────
+  URI base:  http://purl.obolibrary.org/obo/MP_
+  Licence:   CC BY 4.0
+  Source:    https://www.informatics.jax.org/
+
+  ── HL7 FHIR R4 ───────────────────────────────────────────────────────
+  Standard:  HL7 FHIR Release 4 (v4.0.1)
+  Licence:   CC0 (specification); implementation carries own licence
+  Source:    https://www.hl7.org/fhir/R4/
+
+-------------------------------------------------------------------------------
+PART V — CONTACT
+-------------------------------------------------------------------------------
+
+  Commercial licensing:   info@biotwinrs.com
+  Repository:             https://github.com/Pierianspring/digitalsoma
+  PyPI:                   https://pypi.org/project/digitalsoma
+  Author ORCID:           https://orcid.org/0000-0002-9986-5324
+
+===============================================================================
+END OF LICENCE AND NOTICES
+===============================================================================

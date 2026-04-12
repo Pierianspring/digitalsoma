@@ -13,13 +13,16 @@ Tools exposed:
     ds_get_state         — retrieve a specific canonical property value
     ds_update            — ingest sensor readings and re-run solver chain
     ds_query_history     — retrieve time-series for a property
-    ds_list_solvers      — list registered solvers
-    ds_register_solver   — register a custom solver (code string, eval-sandboxed)
-    ds_to_jsonld         — export state as JSON-LD
+    ds_list_solvers      — list registered solvers in DAG order
+    ds_to_jsonld         — export state as JSON-LD linked data
     ds_veddra_report     — generate VeDDRA adverse event report
     ds_alarm_status      — check threshold event system status
     ds_manifest_summary  — list registered sensors
+    ds_structural_layer  — return species identity and normal ranges
     ds_to_fhir_bundle    — export state as HL7 FHIR R4 Bundle
+
+Note: custom solver registration is available via the Python API only —
+call ds.register_method(name, fn) directly on the DigitalSoma instance.
 """
 
 from __future__ import annotations
@@ -364,7 +367,7 @@ class SomaDispatcher:
 
 SOMA_LLM_CONTEXT: Dict[str, Any] = {
     "framework": "DigitalSoma",
-    "version": "2.2.0",
+    "version": "3.0.0",
     "description": (
         "DigitalSoma is a digital twin framework for animal physiology monitoring. "
         "It represents a living animal as a continuously updated computational object "

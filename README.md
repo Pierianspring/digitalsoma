@@ -4,11 +4,11 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/digitalsoma.svg)](https://pypi.org/project/digitalsoma/)
 [![Python](https://img.shields.io/pypi/pyversions/digitalsoma.svg)](https://pypi.org/project/digitalsoma/)
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--9986--5324-green.svg)](https://orcid.org/0000-0002-9986-5324)
 
 **Author:** Dr. ir. Ali Youssef — Adjunct Professor, Computational Bio-Ecosystems,
-Digital Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd.
+Agroecosystems Laboratory, University of Manitoba & BioTwinR Ltd., Winnipeg, Canada
 
 ---
 
@@ -50,7 +50,7 @@ print(state["thermal_comfort_index"])        # Newton: 0.94 → heat stress
 print(state["physiological_stress_index"])  # HPA: 0.52
 print(state["adverse_event_score"])         # VeDDRA: 0.17
 
-# FHIR R4 export (new in v2.2.0)
+# FHIR R4 export (new in v3.0.0)
 bundle = ds.to_fhir_bundle()
 print(bundle["total"])                       # 21 resources
 
@@ -130,7 +130,7 @@ Custom species registered via `register_animal_type(name, config)`.
 
 ## HL7 FHIR R4 integration
 
-New in v2.2.0 — zero external dependencies:
+New in v3.0.0 — zero external dependencies:
 
 ```python
 from digitalsoma.fhir import to_fhir_bundle, from_fhir_bundle
@@ -212,7 +212,7 @@ pytest tests/ -v
   title     = {{DigitalSoma}: A physics-based digital twin framework
                for real-time animal physiology monitoring},
   year      = {2026},
-  version   = {2.2.0},
+  version   = {3.0.0},
   publisher = {BioTwinR Ltd. \& University of Manitoba},
   url       = {https://github.com/Pierianspring/digitalsoma},
   orcid     = {0000-0002-9986-5324},
@@ -225,7 +225,7 @@ See `CITATION.cff` for the CFF-format citation (GitHub "Cite this repository" bu
 
 ## Licence
 
-CC BY 4.0 — see [LICENSE](LICENSE).
+CC BY-NC-SA 4.0 — see [LICENSE](LICENSE).
 Free to use, share, and adapt with attribution.
 
 ---

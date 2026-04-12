@@ -1,6 +1,6 @@
 """DigitalSoma — Digital Twin Framework for Animal Physiology Monitoring."""
 
-__version__ = "2.2.0"
+__version__ = "3.0.0"
 
 from digitalsoma.soma_api import (
     DigitalSoma,

@@ -1,6 +1,6 @@
 # Getting Started with DigitalSoma
 
-This guide takes you from installation to a working physiological digital twin in under ten minutes. No prior experience with digital twins or veterinary informatics is required.
+DigitalSoma is a dynamic physiological digital twin engine for living animals. This guide takes you from installation to a working twin in under ten minutes.
 
 ---
 
@@ -14,307 +14,247 @@ This guide takes you from installation to a working physiological digital twin i
 
 ## 1. Installation
 
-Clone the repository and install in editable mode:
-
 ```bash
-git clone https://github.com/Pierianspring/digitalsoma.git
-cd digitalsoma
-pip install -e .
+pip install digitalsoma
 ```
 
 Verify the installation:
 
 ```python
 import digitalsoma
-print(digitalsoma.__version__)   # → 2.2.0
+print(digitalsoma.__version__)   # → 3.0.0
+```
+
+Optional extras:
+
+```bash
+pip install "digitalsoma[yaml]"   # PyYAML support for config files
+pip install "digitalsoma[llm]"    # Anthropic SDK for LLM agent interface
+pip install "digitalsoma[dev]"    # pytest + build tools
 ```
 
 ---
 
 ## 2. Your first digital twin
 
-A DigitalSoma twin is created with two objects: a `SomaConfig` describing the animal, and `build_soma()` which constructs the twin from that config.
+Build a porcine twin and inspect the structural layer:
 
 ```python
 from digitalsoma import build_soma, SomaConfig
 
-ds = build_soma(SomaConfig(
-    animal_type = "bovine_adult",
-    site_name   = "Farm A, Manitoba",
-))
+config = SomaConfig(
+    animal_type = "porcine_adult",
+    animal_id   = "pig-001",
+    site_name   = "Research Unit 3",
+)
+
+ds = build_soma(config)
+print(ds.structural_layer)
+# {'taxa': 'Sus scrofa domesticus', 'ncbi_taxon_id': '9823',
+#  'body_mass_kg': 90.0, 'hr_normal_bpm': 75.0, ...}
 ```
 
-That is all that is needed to initialise a fully parameterised physiological digital twin. The twin now holds the structural layer for an adult *Bos taurus*: body mass 600 kg, resting heart rate 60 bpm, normal core temperature 38.5 °C, and six anatomical systems registered.
-
-Inspect the structural layer:
-
-```python
-sl = ds.structural_layer
-print(sl["taxa"])               # → Bos taurus
-print(sl["body_mass_kg"])       # → 600.0
-print(sl["hr_normal_bpm"])      # → 60.0
-print(sl["core_temp_normal_C"]) # → 38.5
-print(ds.solvers)               # → list of 6 registered solvers
-```
+Six species are available out of the box: `porcine_adult`, `equine_adult`, `bovine_adult`, `ovine_adult`, `canine_adult`, `salmonid_adult`.
 
 ---
 
 ## 3. Pushing sensor readings
 
-Feed sensor data to the twin with `update_sync()`. Pass any dict of key-value pairs — DigitalSoma resolves vendor aliases automatically and converts units on the fly.
-
 ```python
 state = ds.update_sync({
-    "HR":          72,      # alias for heart_rate_bpm
-    "core_temp_C": 39.1,
-    "SpO2":        97.5,    # alias for spo2_pct
-    "RR":          28,      # alias for respiratory_rate_bpm
+    "HR":   75,      # vendor alias → heart_rate_bpm (resolved automatically)
+    "Tb":   38.8,    # vendor alias → core_temp_C
+    "SpO2": 98.5,    # vendor alias → spo2_pct
+    "RR":   20,      # vendor alias → respiratory_rate_bpm
 })
+
+# Directly measured variables (normalised)
+print(state["heart_rate_bpm"])          # 75.0
+print(state["core_temp_C"])             # 38.8
+
+# Variables derived by the solver chain
+print(state["cardiac_output_L_min"])    # ~4.5
+print(state["thermal_comfort_index"])   # ~0.0 (balanced)
+print(state["physiological_stress_index"])  # ~0.02
+print(state["adverse_event_score"])     # 0.0
 ```
 
-`update_sync()` returns the full merged state dict after all six solvers have run.
-
-```python
-# Directly measured variables
-print(state["heart_rate_bpm"])          # → 72.0
-print(state["core_temp_C"])             # → 39.1
-print(state["spo2_pct"])                # → 97.5
-
-# Variables inferred by the solver chain
-print(state["cardiac_output_L_min"])    # → 5.76
-print(state["rmr_W"])                   # → 133.4
-print(state["thermal_comfort_index"])   # → 0.07  (slight heat load)
-print(state["physiological_stress_index"]) # → 0.18
-print(state["adverse_event_score"])     # → 0.0   (no active flags)
-```
+The six built-in solvers run automatically in dependency order. These solvers are a starting point — you can add, replace, or supplement them with your own computational models.
 
 ---
 
 ## 4. Threshold alarms
 
-The Threshold Event System (TES) checks every variable on every `update_sync()` call. Push a reading that exceeds the hyperthermia threshold:
-
 ```python
-state = ds.update_sync({
-    "core_temp_C":          41.0,   # > 40.5 → hyperthermia alarm
-    "heart_rate_bpm":       105,    # > 120 threshold — not yet breached
-    "respiratory_rate_bpm": 50,
-    "spo2_pct":             95.0,
-})
-
-print(state["adverse_event_score"])    # → 0.167
-print(state["ae_flags"])
-# → [{"veddra_term": "Hyperthermia", "veddra_id": "10020557", ...}]
-```
-
-Register a callback to receive alarm events in real time:
-
-```python
-def on_alarm(key, value, label):
+def on_alarm(key: str, value: float, label: str) -> None:
     print(f"ALARM  {label}: {key} = {value:.2f}")
 
 ds._tes.register_handler(on_alarm)
 
-# Next update_sync() will call on_alarm() for any breach
-ds.update_sync({"core_temp_C": 41.2, "heart_rate_bpm": 108, "spo2_pct": 92.0})
-# ALARM  hyperthermia/hypothermia: core_temp_C = 41.20
-# ALARM  hypoxaemia: spo2_pct = 92.00
+state = ds.update_sync({
+    "core_temp_C":    41.0,   # > T_base + 1.5°C → VeDDRA Hyperthermia
+    "heart_rate_bpm": 115.0,  # > 75 × 1.5 → VeDDRA Tachycardia
+    "spo2_pct":       92.0,
+})
+# ALARM  hyperthermia/hypothermia: core_temp_C = 41.00
 ```
 
 ---
 
 ## 5. Time-series history
 
-Every state snapshot is stored in the Time-Series Log. Query any property over any window:
-
 ```python
 # All recorded values for heart rate
 history = ds.query_history("heart_rate_bpm")
-for record in history:
-    print(f"t={record['timestamp']:.1f}  HR={record['value']} bpm")
 
 # Last 3 readings only
 recent = ds.query_history("core_temp_C", limit=3)
 
 # Readings since a Unix timestamp
-import time
-window = ds.query_history("spo2_pct", since=time.time() - 300)  # last 5 minutes
+since  = ds.query_history("cortisol_nmol_L", since=1712000000.0)
 ```
 
 ---
 
 ## 6. VeDDRA adverse event report
 
-Generate a structured pharmacovigilance report from the current state:
-
 ```python
+# Simulate heat stress
+ds.update_sync({
+    "core_temp_C":          40.6,
+    "heart_rate_bpm":       130.0,
+    "respiratory_rate_bpm":  68.0,
+    "cortisol_nmol_L":      190.0,
+})
+
 report = ds.veddra_report()
-
-print(report["taxa"])                   # → Bos taurus
-print(report["adverse_event_score"])    # → 0.333
-print(report["reporting_standard"])     # → VeDDRA v2.2
-
+print(report["reporting_standard"])   # VeDDRA Rev.16 — EMA/CVMP/PhVWP/10418/2009
+print(report["adverse_event_score"])  # 0.38
 for sign in report["clinical_signs"]:
-    print(f"[{sign['veddra_id']}] {sign['veddra_term']}"
-          f" ({sign['state_key']} = {sign['value']:.2f})")
-# [10020557] Hyperthermia (core_temp_C = 41.20)
-# [10021143] Hypoxia (spo2_pct = 92.00)
+    print(f"  [PT {sign['veddra_pt_code']}] {sign['veddra_term']}")
+# [PT 604] Hyperthermia
+# [PT 122] Tachycardia
+# [PT 515] Tachypnoea
+```
+
+VeDDRA codes are the official EMA Rev.16 Preferred Term codes, corrected in v3.0.0 from the incorrect 8-digit codes used in v2.x.
+
+---
+
+## 7. FHIR R4 export
+
+```python
+from digitalsoma.fhir import to_fhir_bundle, from_fhir_bundle
+
+# Export current state as a FHIR R4 Bundle
+bundle = to_fhir_bundle(ds)
+print(bundle["total"])   # 21 resources
+
+# DiagnosticReport carries VeDDRA flags mapped to SNOMED CT
+dr = next(e["resource"] for e in bundle["entry"]
+          if e["resource"]["resourceType"] == "DiagnosticReport")
+print(dr["status"])      # "amended"
+print(dr["conclusion"])  # "Hyperthermia [VeDDRA PT 604]; ..."
+
+# Round-trip: parse incoming FHIR Observations back into the twin
+readings = from_fhir_bundle(bundle)
+ds.update_sync(readings)
 ```
 
 ---
 
-## 7. JSON-LD export
-
-Export the current state as a self-describing linked-data document. Every property carries its ontology URI in the `@context` block:
+## 8. JSON-LD ontology export
 
 ```python
-import json
 doc = ds.to_jsonld()
-print(json.dumps(doc, indent=2))
-# {
-#   "@context": {
-#     "heart_rate_bpm": "http://purl.obolibrary.org/obo/CMO_0000052",
-#     "spo2_pct": "http://snomed.info/id/59408-5",
-#     ...
-#   },
-#   "@type": "DigitalSoma",
-#   "taxa": "Bos taurus",
-#   "heart_rate_bpm": 108.0,
-#   ...
-# }
+# doc["@context"]["heart_rate_bpm"]["@id"]
+# → "http://purl.obolibrary.org/obo/CMO_0000052"
+# doc["@context"]["spo2_pct"]["@id"]
+# → "http://snomed.info/id/103228002"  (corrected in v3.0.0)
 ```
 
 ---
 
-## 8. Custom sensors (BYOD manifest)
-
-Any sensor stream can be ingested using the six-field manifest contract. Units are converted automatically.
+## 9. Custom sensors (BYOD manifest)
 
 ```python
-from digitalsoma.sensor.sensor_layer import SensorManifest, SensorManifestEntry
+from digitalsoma.sensor.sensor_layer import SensorLayer, SensorManifestEntry
 
-manifest = SensorManifest()
-manifest.register(SensorManifestEntry(
-    sensor_id    = "collar_001",
-    canonical_key = "heart_rate_bpm",
-    unit         = "bpm",
-))
-manifest.register(SensorManifestEntry(
-    sensor_id    = "rectal_probe_02",
-    canonical_key = "core_temp_C",
-    unit         = "°F",          # → automatically converted to °C
+layer = SensorLayer()
+layer.register_sensor(SensorManifestEntry(
+    sensor_id      = "CGM_01",
+    property_alias = "glucose",
+    unit           = "mg/dL",        # auto-converted to mmol/L
+    description    = "Continuous glucose monitor",
 ))
 
-# Read a batch from manifest into update_sync()
-readings = manifest.read_batch([
-    {"sensor_id": "collar_001",    "value": 74.0, "quality_flag": 0},
-    {"sensor_id": "rectal_probe_02", "value": 102.8, "quality_flag": 0},
+readings = layer.ingest([
+    {"sensor_id": "CGM_01", "value": 90.0, "quality_flag": 0},
 ])
 state = ds.update_sync(readings)
 ```
 
-Use a preset manifest for a standard cattle wearable collar suite:
+Fourteen unit conversions are built in: °F→°C, K→°C, kPa→mmHg, psi→mmHg, bar→mmHg, mg/dL→mmol/L, μg/dL→nmol/L, lb→kg, g→kg, Hz→/min, and more.
+
+---
+
+## 10. User-defined solvers
+
+DigitalSoma's solver chain is fully extensible. Any function that accepts `params: dict` and `state: dict` and returns a dict of new properties can be registered. The function may implement any computational approach — allometric equations, regression models, machine learning inference, compartmental models, or empirical lookup tables.
 
 ```python
-from digitalsoma.sensor.sensor_layer import wearable_cattle_manifest
-manifest = wearable_cattle_manifest()
+def welfare_solver(params: dict, state: dict) -> dict:
+    """Animal Welfare Index combining thermal, stress, and oxygen components."""
+    tci  = state.get("thermal_comfort_index", 0.0)
+    psi  = state.get("physiological_stress_index", 0.0)
+    spo2 = state.get("spo2_pct", 98.0)
+
+    thermal_w = max(0.0, 1.0 - abs(tci) * 2.0)
+    stress_w  = max(0.0, 1.0 - psi)
+    oxygen_w  = max(0.0, min(1.0, (spo2 - 90.0) / 8.0))
+
+    awi = 0.40*thermal_w + 0.40*stress_w + 0.20*oxygen_w
+    return {"animal_welfare_index": round(awi, 4)}
+
+ds.register_method("welfare_index", welfare_solver)
+# animal_welfare_index now appears in every subsequent update_sync() output
+```
+
+Built-in solvers can be replaced:
+
+```python
+ds.unregister_method("metabolic_rate")
+ds.register_method("metabolic_rate", my_mechanistic_model)
 ```
 
 ---
 
-## 9. Custom solvers
-
-Register any Python function as a solver with `register_method()`. Custom solvers run after all built-ins in the DAG, so they can consume cardiovascular, metabolic, and stress outputs from the same update cycle.
+## 11. Adding a custom species
 
 ```python
-def hrv_estimator(params: dict, state: dict) -> dict:
-    hr  = state.get("heart_rate_bpm")
-    psi = state.get("physiological_stress_index", 0.0)
-    if hr is None or hr <= 0:
-        return {}
-    rr_ms = (60.0 / hr) * 1000.0
-    rmssd = rr_ms * 0.065 * (1.0 - 0.85 * psi)
-    return {
-        "hrv_rmssd_ms": max(rmssd, 2.0),
-        "hrv_status":   "normal" if rmssd >= 30 else "reduced" if rmssd >= 15 else "suppressed",
-    }
+from digitalsoma import register_animal_type
 
-ds.register_method("hrv_estimator", hrv_estimator)
-
-state = ds.update_sync({"heart_rate_bpm": 72, "core_temp_C": 38.5})
-print(state["hrv_rmssd_ms"])    # → 57.3
-print(state["hrv_status"])      # → normal
-```
-
----
-
-## 10. Custom species
-
-Register a new animal type without modifying the codebase:
-
-```python
-from digitalsoma import register_animal_type, build_soma, SomaConfig
-
-register_animal_type("feline_adult", {
-    "taxa":                "Felis catus",
-    "ncbi_taxon_id":       "9685",
-    "body_mass_kg":        4.5,
-    "core_temp_normal_C":  38.6,
-    "hr_normal_bpm":       150.0,
-    "rr_normal_bpm":       30.0,
-    "systems":             ["cardiovascular", "metabolic", "thermoregulation",
-                            "respiratory", "neuroendocrine"],
+register_animal_type("alpaca_adult", {
+    "taxa":               "Vicugna pacos",
+    "ncbi_taxon_id":      "30538",
+    "body_mass_kg":        65.0,
+    "core_temp_normal_C":  38.0,
+    "hr_normal_bpm":       70.0,
+    "rr_normal_bpm":       20.0,
+    "systems": ["cardiovascular", "metabolic", "thermoregulation"],
 })
-
-ds = build_soma(SomaConfig(animal_type="feline_adult", site_name="Vet clinic"))
-state = ds.update_sync({"heart_rate_bpm": 160, "core_temp_C": 39.0})
 ```
-
----
-
-## 11. Export to FHIR R4
-
-DigitalSoma v2.2.0 adds a native HL7 FHIR R4 export. Every twin can produce a standards-compliant Bundle containing a Patient (animal subject), Device (twin identifier), Observations (one per mapped canonical property), and a DiagnosticReport (VeDDRA findings):
-
-```python
-import json
-from digitalsoma.fhir import to_fhir_bundle, from_fhir_bundle
-
-# Export current state as a FHIR R4 Bundle
-bundle = ds.to_fhir_bundle()
-print(f"Bundle entries: {bundle['total']}")   # → 21
-
-# Inspect the DiagnosticReport
-dr = next(
-    e["resource"] for e in bundle["entry"]
-    if e["resource"]["resourceType"] == "DiagnosticReport"
-)
-print(dr["conclusion"])   # → "No adverse events detected." or fired VeDDRA terms
-
-# Round-trip: parse an incoming FHIR bundle back into a readings dict
-readings = from_fhir_bundle(bundle)
-ds2.update_sync(readings)  # feed into a new twin
-
-# Transaction bundle for POST to a FHIR server
-tx_bundle = ds.to_fhir_bundle(bundle_type="transaction")
-
-# Save to file
-with open("equine_bundle.json", "w") as f:
-    json.dump(bundle, f, indent=2)
-```
-
-Every Observation is dual-coded with LOINC and SNOMED CT, uses UCUM units, and carries a `urn:digitalsoma:canonical_key` extension for lossless round-trips. See `examples/e5_fhir_integration.py` for a complete walkthrough, and Section 12 of the User Manual for full API reference.
 
 ---
 
 ## 12. Run the examples
 
 ```bash
-python examples/e1_build_and_describe.py    # structural layer across all 5 species
-python examples/e2_solver_chain.py          # heat-stress/recovery cycle
+python examples/e1_build_and_describe.py    # structural layer across all 6 species
+python examples/e2_solver_chain.py          # heat-stress / recovery cycle
 python examples/e3_ontology_compliance.py   # alias resolution and JSON-LD
-python examples/e4_custom_solver.py         # HRV extension + VeDDRA report
-python examples/e5_fhir_integration.py      # FHIR R4 export, round-trip, FHIRMapper
+python examples/e4_custom_solver.py         # user-defined solver + VeDDRA report
+python examples/e5_fhir_integration.py      # FHIR R4 export and round-trip
 ```
 
 ---
@@ -322,19 +262,73 @@ python examples/e5_fhir_integration.py      # FHIR R4 export, round-trip, FHIRMa
 ## 13. Run the tests
 
 ```bash
-# With pytest
-python -m pytest tests/ -v
-
-# Without pytest
-python tests/test_soma.py
-python tests/test_ontology.py
-python tests/test_fhir.py
+pip install "digitalsoma[dev]"
+pytest tests/ -v
 ```
 
 ---
 
 ## Next steps
 
-- **[User Manual](USER_MANUAL.md)** — complete API reference including the full FHIR R4 section (section 12)
-- **[Examples](../examples/)** — five annotated examples covering the full feature set
-- **[ORCID](https://orcid.org/0000-0002-9986-5324)** — Dr. ir. Ali Youssef's research profile
+- **[Technical Documentation](USER_MANUAL.md)** — complete reference including the standards and data models chapter, FHIR integration, and VeDDRA pharmacovigilance
+- **[GitHub](https://github.com/Pierianspring/digitalsoma)** — source code, issues, and discussions
+- **[ORCID](https://orcid.org/0000-0002-9986-5324)** — Dr. ir. Ali Youssef
+
+---
+
+## References
+
+The following references underpin the built-in solvers and standards implemented in DigitalSoma v3.0.0. References are listed by topic.
+
+### Digital twin concept
+
+- Grieves, M. (2014). Digital twin: Manufacturing excellence through virtual factory replication. White Paper. Florida Institute of Technology.
+- Tao, F., Sui, F., Liu, A., et al. (2019). Digital twin-driven product design framework. *International Journal of Production Research*, 57(12), 3935–3953.
+
+### Solver 1 — Cardiovascular (Fick equation)
+
+- Fick, A. (1870). Über die Messung des Blutquantums in den Herzventrikeln. *Sitzungsberichte der Physikalisch-Medizinischen Gesellschaft zu Würzburg*, 2, 16–28.
+- Guyton, A. C., & Hall, J. E. (2015). *Textbook of Medical Physiology* (13th ed.). Elsevier Saunders.
+- Evans, D. L., & Rose, R. J. (1988). Cardiovascular and respiratory responses to exercise in thoroughbred horses. *Journal of Experimental Biology*, 134(1), 397–408.
+
+### Solver 2 — Metabolic rate (Kleiber's law + Q10)
+
+- Kleiber, M. (1947). Body size and metabolic rate. *Physiological Reviews*, 27(4), 511–541.
+- Kleiber, M. (1961). *The Fire of Life: An Introduction to Animal Energetics*. Wiley, New York.
+- Blaxter, K. L. (1989). *Energy Metabolism in Animals and Man*. Cambridge University Press.
+- Brown, J. H., Gillooly, J. F., Allen, A. P., Savage, V. M., & West, G. B. (2004). Toward a metabolic theory of ecology. *Ecology*, 85(7), 1771–1789.
+
+### Solver 3 — Thermoregulation (Newton's law of cooling)
+
+- Newton, I. (1701). Scala graduum caloris. *Philosophical Transactions of the Royal Society*, 22, 824–829.
+- Mount, L. E. (1979). *Adaptation to Thermal Environment: Man and His Productive Animals*. Edward Arnold, London.
+- Gebremedhin, K. G., & Wu, B. (2001). A model of evaporative cooling of wet skin surface and fur layer. *Journal of Thermal Biology*, 26(6), 537–545.
+- Mader, T. L., Davis, M. S., & Brown-Brandl, T. (2006). Environmental factors influencing heat stress in feedlot cattle. *Journal of Animal Science*, 84(3), 712–719.
+
+### Solver 4 — Respiratory gas exchange
+
+- Brouwer, E. (1965). Report of sub-committee on constants and factors. In K. L. Blaxter (Ed.), *Energy Metabolism*. Academic Press, London.
+- West, J. B. (2012). *Respiratory Physiology: The Essentials* (9th ed.). Lippincott Williams & Wilkins.
+- Weibel, E. R. (1984). *The Pathway for Oxygen*. Harvard University Press.
+- McLean, J. A., & Tobin, G. (1987). *Animal and Human Calorimetry*. Cambridge University Press.
+
+### Solver 5 — Physiological Stress Index (PSI)
+
+> **Important:** The PSI is an original formulation developed specifically for DigitalSoma, designed to trigger the Threshold Event System alarm and the VeDDRA Dyspnoea flag. It is **not a validated clinical index**. The individual components draw on the references below, but the composite formula and thresholds have not been validated in any species. Do not use the PSI as a standalone clinical diagnostic criterion.
+
+- Selye, H. (1936). A syndrome produced by diverse nocuous agents. *Nature*, 138(3479), 32.
+- Mormède, P., et al. (2007). Exploration of the hypothalamic-pituitary-adrenal function as a tool to evaluate animal welfare. *Physiology & Behavior*, 92(3), 317–339.
+- von Borell, E., et al. (2007). Heart rate variability as a measure of autonomic regulation of cardiac activity for assessing stress and welfare in farm animals. *Physiology & Behavior*, 92(3), 293–316.
+- Moberg, G. P., & Mench, J. A. (Eds.) (2000). *The Biology of Animal Stress*. CABI Publishing.
+
+### Solver 6 — VeDDRA adverse event screen
+
+- European Medicines Agency — CVMP PhVWP-V. (2025). Combined VeDDRA list of clinical terms for reporting suspected adverse events in animals and humans to veterinary medicinal products — Rev.16. EMA/CVMP/PhVWP/10418/2009 Rev.16. Effective 1 October 2025. EMA, Amsterdam.
+- European Parliament and Council. (2019). Regulation (EU) 2019/6 on veterinary medicinal products. *Official Journal of the European Union*, L4, 43–167.
+
+### Ontology and interoperability standards
+
+- Smith, B., et al. (2007). The OBO Foundry: coordinated evolution of ontologies to support biomedical data integration. *Nature Biotechnology*, 25(11), 1251–1255.
+- HL7 International. (2019). HL7 FHIR R4 Specification. https://www.hl7.org/fhir/R4/
+- McDonald, C. J., et al. (2003). LOINC, a universal standard for identifying laboratory observations. *Clinical Chemistry*, 49(4), 624–633.
+- SNOMED International. (2024). SNOMED CT — The global language of healthcare. https://www.snomed.org

@@ -33,6 +33,54 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from digitalsoma.soma_api import DigitalSoma
 
+# FHIR R4 Observation category map
+# Each canonical key is assigned its correct HL7 observation-category code.
+# Reference: http://terminology.hl7.org/CodeSystem/observation-category
+#
+# vital-signs  : core physiological measurements taken at point of care
+# laboratory   : results from analysis of biological specimens
+# activity     : physical activity and movement measurements
+# survey       : derived scores and composite indices
+#
+# Keys not listed here fall back to 'vital-signs' as the safest default.
+
+_OBS_CATEGORY: Dict[str, Dict[str, str]] = {
+    # ── Vital signs ──────────────────────────────────────────────────────────
+    "heart_rate_bpm":             {"code": "vital-signs",  "display": "Vital Signs"},
+    "systolic_bp_mmHg":           {"code": "vital-signs",  "display": "Vital Signs"},
+    "diastolic_bp_mmHg":          {"code": "vital-signs",  "display": "Vital Signs"},
+    "mean_arterial_pressure_mmHg":{"code": "vital-signs",  "display": "Vital Signs"},
+    "cardiac_output_L_min":       {"code": "vital-signs",  "display": "Vital Signs"},
+    "stroke_volume_mL":           {"code": "vital-signs",  "display": "Vital Signs"},
+    "respiratory_rate_bpm":       {"code": "vital-signs",  "display": "Vital Signs"},
+    "spo2_pct":                   {"code": "vital-signs",  "display": "Vital Signs"},
+    "core_temp_C":                {"code": "vital-signs",  "display": "Vital Signs"},
+    "skin_temp_C":                {"code": "vital-signs",  "display": "Vital Signs"},
+    "ambient_temp_C":             {"code": "vital-signs",  "display": "Vital Signs"},
+    "body_mass_kg":               {"code": "vital-signs",  "display": "Vital Signs"},
+    # ── Laboratory ───────────────────────────────────────────────────────────
+    "blood_glucose_mmol_L":       {"code": "laboratory",   "display": "Laboratory"},
+    "cortisol_nmol_L":            {"code": "laboratory",   "display": "Laboratory"},
+    "insulin_pmol_L":             {"code": "laboratory",   "display": "Laboratory"},
+    "haematocrit_pct":            {"code": "laboratory",   "display": "Laboratory"},
+    "haemoglobin_g_dL":           {"code": "laboratory",   "display": "Laboratory"},
+    "wbc_10e9_L":                 {"code": "laboratory",   "display": "Laboratory"},
+    "creatinine_umol_L":          {"code": "laboratory",   "display": "Laboratory"},
+    "vo2_L_min":                  {"code": "laboratory",   "display": "Laboratory"},
+    "vco2_L_min":                 {"code": "laboratory",   "display": "Laboratory"},
+    "minute_ventilation_L_min":   {"code": "laboratory",   "display": "Laboratory"},
+    # ── Activity ─────────────────────────────────────────────────────────────
+    "acceleration_m_s2":          {"code": "activity",     "display": "Activity"},
+    "activity_counts":            {"code": "activity",     "display": "Activity"},
+    "lying_time_min":             {"code": "activity",     "display": "Activity"},
+    # ── Survey (derived scores and composite indices) ─────────────────────────
+    "thermal_comfort_index":      {"code": "survey",       "display": "Survey"},
+    "physiological_stress_index": {"code": "survey",       "display": "Survey"},
+    "adverse_event_score":        {"code": "survey",       "display": "Survey"},
+    "rmr_kcal_day":               {"code": "survey",       "display": "Survey"},
+    "rmr_W":                      {"code": "survey",       "display": "Survey"},
+}
+
 # ---------------------------------------------------------------------------
 # FHIR R4 coding map
 # canonical_key  →  {loinc, snomed, display, ucum_fhir}
@@ -84,8 +132,8 @@ _FHIR_CODING: Dict[str, Dict[str, str]] = {
         "display": "Oxygen consumption", "ucum": "L/min", "system": "loinc",
     },
     "vco2_L_min": {
-        "snomed": "250811004",
-        "display": "Carbon dioxide production", "ucum": "L/min", "system": "snomed",
+        "loinc": "19135-4", "snomed": "250811004",
+        "display": "Carbon dioxide production", "ucum": "L/min", "system": "loinc",
     },
     "minute_ventilation_L_min": {
         "loinc": "20155-0", "snomed": "250853002",
@@ -124,8 +172,8 @@ _FHIR_CODING: Dict[str, Dict[str, str]] = {
         "ucum": "pmol/L", "system": "loinc",
     },
     "rmr_kcal_day": {
-        "snomed": "251845006",
-        "display": "Resting metabolic rate", "ucum": "kcal/d", "system": "snomed",
+        "loinc": "2515-6", "snomed": "251845006",
+        "display": "Resting metabolic rate", "ucum": "kcal/d", "system": "loinc",
     },
     "rmr_W": {
         "snomed": "251845006",
@@ -177,14 +225,30 @@ _FHIR_CODING: Dict[str, Dict[str, str]] = {
     },
 }
 
-# VeDDRA term → SNOMED CT concept for DiagnosticReport coding
+# VeDDRA PT code → SNOMED CT concept for DiagnosticReport coding
+# PT codes are EMA Rev.16 official codes (EMA/CVMP/PhVWP/10418/2009 Rev.16)
+# Key = VeDDRA PT code (str), value = SNOMED CT concept dict
 _VEDDRA_TO_SNOMED: Dict[str, Dict[str, str]] = {
-    "Hyperthermia":  {"snomed": "386689009", "display": "Hyperthermia"},
-    "Hypothermia":   {"snomed": "386692006", "display": "Hypothermia"},
-    "Tachycardia":   {"snomed": "3424008",   "display": "Tachycardia"},
-    "Bradycardia":   {"snomed": "48867003",  "display": "Bradycardia"},
-    "Hypoxia":       {"snomed": "389086002", "display": "Hypoxia"},
-    "Distress":      {"snomed": "274668005", "display": "Physiological distress"},
+    # ── Cardiovascular ────────────────────────────────────────────────────
+    "122": {"snomed": "3424008",   "display": "Tachycardia"},
+    "120": {"snomed": "48867003",  "display": "Bradycardia"},
+    # ── Respiratory ───────────────────────────────────────────────────────
+    "501": {"snomed": "389086002", "display": "Hypoxia"},
+    "515": {"snomed": "271823003", "display": "Tachypnoea"},
+    "504": {"snomed": "86290005",  "display": "Bradypnoea"},
+    "506": {"snomed": "267036007", "display": "Dyspnoea"},
+    "502": {"snomed": "1023001",   "display": "Apnoea"},
+    # ── Systemic / Temperature ────────────────────────────────────────────
+    "604": {"snomed": "386689009", "display": "Hyperthermia"},
+    "605": {"snomed": "386692006", "display": "Hypothermia"},
+    "601": {"snomed": "3415004",   "display": "Cyanosis"},
+    "657": {"snomed": "34095006",  "display": "Dehydration"},
+    "946": {"snomed": "89362005",  "display": "Weight loss"},
+    "598": {"snomed": "79890006",  "display": "Anorexia"},
+    # ── Investigations ────────────────────────────────────────────────────
+    "904": {"snomed": "271327008", "display": "Hypoglycaemia"},
+    "903": {"snomed": "80394007",  "display": "Hyperglycaemia"},
+    "85":  {"snomed": "271737000", "display": "Anaemia"},
 }
 
 # LOINC inbound alias → canonical DigitalSoma key (for from_fhir_bundle)
@@ -198,12 +262,14 @@ _LOINC_TO_CANONICAL: Dict[str, str] = {
     "9279-1":  "respiratory_rate_bpm",
     "59408-5": "spo2_pct",
     "19139-6": "vo2_L_min",
+    "19135-4": "vco2_L_min",
     "20155-0": "minute_ventilation_L_min",
     "8310-5":  "core_temp_C",
     "91556-1": "skin_temp_C",
     "2339-0":  "blood_glucose_mmol_L",
     "2143-6":  "cortisol_nmol_L",
     "20448-9": "insulin_pmol_L",
+    "2515-6":  "rmr_kcal_day",
     "55423-8": "activity_counts",
     "20570-8": "haematocrit_pct",
     "718-7":   "haemoglobin_g_dL",
@@ -362,7 +428,7 @@ class FHIRMapper:
                     )
                 ]
             },
-            "version": [{"value": "2.2.0"}],
+            "version": [{"value": "3.0.0"}],
             "patient": self._reference(f"Patient/{animal_id}"),
             "note": [
                 {
@@ -411,6 +477,9 @@ class FHIRMapper:
 
         iso_ts = self._now_iso() if timestamp is None else _epoch_to_iso(timestamp)
 
+        # Look up the correct FHIR observation category for this property
+        cat = _OBS_CATEGORY.get(canonical_key, {"code": "vital-signs", "display": "Vital Signs"})
+
         obs: Dict[str, Any] = {
             "resourceType": "Observation",
             "id": str(uuid.uuid4()),
@@ -420,8 +489,8 @@ class FHIRMapper:
                     "coding": [
                         self._coding(
                             system="http://terminology.hl7.org/CodeSystem/observation-category",
-                            code="vital-signs",
-                            display="Vital Signs",
+                            code=cat["code"],
+                            display=cat["display"],
                         )
                     ]
                 }
@@ -469,9 +538,10 @@ class FHIRMapper:
         conclusion_codes = []
 
         for flag in ae_flags:
-            term = flag.get("veddra_term", "")
-            veddra_id = flag.get("veddra_id", "")
-            snomed_entry = _VEDDRA_TO_SNOMED.get(term)
+            # v3.0.0 flags use veddra_pt_code; v2.x used veddra_id — support both
+            pt_code   = flag.get("veddra_pt_code") or flag.get("veddra_id", "")
+            term      = flag.get("veddra_term", "")
+            snomed_entry = _VEDDRA_TO_SNOMED.get(pt_code)
 
             if snomed_entry:
                 conclusion_codes.append({
@@ -483,13 +553,26 @@ class FHIRMapper:
                         ),
                         self._coding(
                             system="https://www.ema.europa.eu/en/veterinary-regulatory/",
-                            code=veddra_id,
+                            code=pt_code,
                             display=term,
                         ),
                     ],
-                    "text": f"{term} [VeDDRA {veddra_id}]",
+                    "text": f"{term} [VeDDRA PT {pt_code}]",
                 })
-                conclusions.append(f"{term} [VeDDRA {veddra_id}]")
+                conclusions.append(f"{term} [VeDDRA PT {pt_code}]")
+            elif term:
+                # Flag present but no SNOMED mapping — include VeDDRA coding only
+                conclusion_codes.append({
+                    "coding": [
+                        self._coding(
+                            system="https://www.ema.europa.eu/en/veterinary-regulatory/",
+                            code=pt_code,
+                            display=term,
+                        ),
+                    ],
+                    "text": f"{term} [VeDDRA PT {pt_code}]",
+                })
+                conclusions.append(f"{term} [VeDDRA PT {pt_code}]")
 
         status = "amended" if ae_flags else "final"
         conclusion_text = (
