@@ -1,1 +1,0 @@
-"""EquiTwin sensor manifest modules."""

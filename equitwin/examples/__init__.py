@@ -1,1 +1,0 @@
-"""EquiTwin example scripts."""
